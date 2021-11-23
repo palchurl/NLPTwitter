@@ -13,30 +13,50 @@ auth = tw.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-# Define the variables of the search (player name, amount of tweets to be fetched, and start date of the search)
-firstName = 'Patrick'
-lastName = 'Mahomes'
-fullname = firstName + lastName
-twitterAccount = ''
-search_words = "{}+{} OR {} -filter:retweets".format(firstName, lastName, lastName)
-date_since = "2021-11-13"
-numTweets = 20
+# Enter which list of players to read here:
+filename = ''
 
-tweets = api.user_timeline(screen_name = "mattftheoracle", count = 200000, lang = "en", tweet_mode = "extended")
+#importing list of players
+my_file = open(filename, "r")
+players_list = my_file.readlines()
+players_list = [x[:-1] for x in players_list]
+#print(players_list)
 
-word="the"
-for tweet in tweets:
-    if word in tweet.full_text:
-        #df = pd.DataFrame([tweet.full_text], columns = ["tweet"])
-        print(tweet.full_text)
+#importing list of experts
+my_file = open("expertslist.txt", "r")
+experts_list = my_file.readlines()
+experts_list = [x[:-1] for x in experts_list]
+#print(experts_list)
 
+# Choose how many tweets to search (per account)
+numTweets = 10
 
-# Collect tweets in list
-#tweetData = [[tweet.user.screen_name.encode('utf-8'), tweet.text.encode('utf-8'), tweet.user.location.encode('utf-8')] for tweet in tweets]
+tweetData = []
+
+for expert in experts_list:
+    try:
+        # API fetch request
+        tweets = api.user_timeline(screen_name = expert, count = numTweets, lang = "en", tweet_mode = "extended")
+    except: 
+        print('User not found: ' + expert)
+
+# Search for player names within collected tweets
+for player in players_list:
+    for tweet in tweets:
+        if player in tweet.full_text:
+            tweetData.append(tweet.full_text.encode('utf-8'))
+
+print(tweetData)
 
 # Create pandas dataframe
 # tweet_text = pd.DataFrame(data=tweetData, 
 #                     columns=['user', 'content', 'location'])
 
 # tweet_text.to_csv('test.csv') 
+
+# Output to text file
+textfile = open("experttweets_output.txt", "w")
+for tweet in tweetData:
+    textfile.write(str(tweet) + '\n' + '\n')
+textfile.close()
 
