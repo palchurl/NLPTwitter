@@ -14,7 +14,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
 # Enter which list of players to read here:
-filename = ''
+filename = 'week11.txt'
 
 #importing list of players
 my_file = open(filename, "r")
@@ -23,8 +23,8 @@ players_list = my_file.readlines()
 #print(players_list)
 
 # Define the variables of the search (amount of tweets to be fetched (per player), and start date of the search)
-date_since = "2021-11-14"
-numTweets = 1
+date_since = "2021-11-19"
+numTweets = 100
 
 tweetData = []
 
@@ -38,7 +38,7 @@ for player in players_list:
               tweet_mode="extended",
               since=date_since).items(numTweets)
      
-     tweetData.append([tweet.full_text.encode('utf-8') for tweet in tweets])
+     tweetData.append([player] + [tweet.full_text.encode('utf-8') for tweet in tweets])
 
 
 # Create pandas dataframe
