@@ -1,6 +1,5 @@
 import os
 import tweepy as tw
-import pandas as pd
 
 # API keys
 consumer_key= ''
@@ -45,15 +44,6 @@ for expert in experts_list:
     except: 
         print('User not found: ' + expert)
 
-
-
-#print(tweetData)
-
-# Create pandas dataframe
-# tweet_text = pd.DataFrame(data=tweetData, 
-#                     columns=['user', 'content', 'location'])
-
-# tweet_text.to_csv('test.csv') 
 
 # Output to text file
 textfile = open("experttweets_output.txt", "w")

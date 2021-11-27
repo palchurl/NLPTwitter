@@ -1,6 +1,5 @@
 import os
 import tweepy as tw
-import pandas as pd
 
 # API keys
 consumer_key= ''
@@ -39,13 +38,6 @@ for player in players_list:
               since=date_since).items(numTweets)
      
      tweetData.append([player] + [tweet.full_text.encode('utf-8') for tweet in tweets])
-
-
-# Create pandas dataframe
-# tweet_text = pd.DataFrame(data=tweetData, 
-#                    columns=['content','1','2','3','4'])
-
-# tweet_text.to_csv('draftpicks_corpus.csv') 
 
 # Output to text file
 textfile = open("alltweets_output.txt", "w")
