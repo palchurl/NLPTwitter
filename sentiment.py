@@ -26,3 +26,5 @@ def sentimentAnalysisWithVader(processedTweets):
                 print("")
                 
 sentimentAnalysisWithVader(processedTweets)
+
+#pip install vaderSentiment
