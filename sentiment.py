@@ -3,12 +3,11 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
-#alter process tweets
 processedTweets = [['Johnathan Pierce', 'panther yesterday christian mccaffrey became fastest player nfl history hit rushing yard receiving yard segment gt', 'justin jefferson dalvin cook dont card soon ill cry'], ['Aaron Rodgers', 'derrick henry bird titan person', 'ill never understand sean payton using running alvin kamara', 'nfl pro line men ezekiel elliott navy dallas cowboy big tall player hurry price', 'thumbs_up']]
 
 def sentimentAnalysisWithVader(processedTweets):
     sentimentScores = {}
-    sid_obj = SentimentIntensityAnalyzer()
+    sentAnalyser = SentimentIntensityAnalyzer()
     for playerTweets in processedTweets:
         ctr = -1
         pos = neg = neu = 0
@@ -18,7 +17,7 @@ def sentimentAnalysisWithVader(processedTweets):
                 player = i
                 ctr += 1
             else:
-                sent = sid_obj.polarity_scores(i)
+                sent = sentAnalyser.polarity_scores(i)
                 if (sent['compound'] >= 0.05):
                     pos += 1
                 elif (sent['compound'] <= - 0.05):
