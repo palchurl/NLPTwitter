@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import nltk
 import re, string
 import numpy as np
@@ -11,8 +14,16 @@ import preprocessor as p
 nltk.download('wordnet')
 nltk.download('stopwords')
 
+# Enter which list of tweets to read here:
+filename = 'example.txt'
+
+#importing list of tweets and encoding to utf-8
+tweets = []
+my_file = open(filename, "r")
+tweets = my_file.readlines()
+
 #tweets list is a list of strings
-tweets = [['Johnathan Pierce','Bright spot from the Panthers\xe2\x80\x99 27-21 loss yesterday? Christian McCaffrey became the fastest player in NFL history to hit 3,000 rushing yards and 3,000 receiving yards. \n\n@fox46\n\nFull #GoodDayCharlotte segment -&gt; https://t.co/2ti9VyJSiH https://t.co/iJpuqox99C',"@EASPORTS_MUT @RobGronkowski @JimmySmithJags @JasonTaylor IF JUSTIN JEFFERSON + DALVIN COOK DON'T GET A CARD SOON... I'll cry"],["Aaron Rodgers",'@new_dash_snow @rainIoss Derrick Henry is the bird the Titans are the person','@JayRBP I\xe2\x80\x99ll never understand Sean Payton using him running when he has Alvin Kamara','\xf0\x9f\x91\x89 $124.99 \xf0\x9f\x91\x88\nNFL PRO LINE Mens Ezekiel Elliott Navy Dallas Cowboys Big Tall Player @topfanscorner \n #PRO #LINE #Mens #Ezekiel #Elliott #Navy #Dallas #NFL #Football #NFLfans \n\nHurry up to get it for the best price!\nhttps://t.co/jgqpxZOYaA', 'Python is 👍']]
+#tweets = [['Johnathan Pierce','Bright spot from the Panthers\xe2\x80\x99 27-21 loss yesterday? Christian McCaffrey became the fastest player in NFL history to hit 3,000 rushing yards and 3,000 receiving yards. \n\n@fox46\n\nFull #GoodDayCharlotte segment -&gt; https://t.co/2ti9VyJSiH https://t.co/iJpuqox99C',"@EASPORTS_MUT @RobGronkowski @JimmySmithJags @JasonTaylor IF JUSTIN JEFFERSON + DALVIN COOK DON'T GET A CARD SOON... I'll cry"],["Aaron Rodgers",'@new_dash_snow @rainIoss Derrick Henry is the bird the Titans are the person','@JayRBP I\xe2\x80\x99ll never understand Sean Payton using him running when he has Alvin Kamara','\xf0\x9f\x91\x89 $124.99 \xf0\x9f\x91\x88\nNFL PRO LINE Mens Ezekiel Elliott Navy Dallas Cowboys Big Tall Player @topfanscorner \n #PRO #LINE #Mens #Ezekiel #Elliott #Navy #Dallas #NFL #Football #NFLfans \n\nHurry up to get it for the best price!\nhttps://t.co/jgqpxZOYaA', 'Python is 👍']]
 
 stemmer = PorterStemmer()
 stopWordsList = set(stopwords.words('english'))
@@ -105,8 +116,7 @@ def main():
     for playerTweets in tweets:
         print("___________________")
         res = preprocess(playerTweets)
-        for i in res:
-            print(i)
+        print(res)
         
     
 main()
