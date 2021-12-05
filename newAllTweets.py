@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import tweepy as tw
 import nltk
@@ -7,18 +9,22 @@ import emoji
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
 from collections import Counter
-from nltk import word_tokenize, sent_tokenize
-# import contractions 
+from nltk import word_tokenize, sent_tokenize 
 import preprocessor as p
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+
 
 nltk.download('wordnet')
 nltk.download('stopwords')
 
 # API keys
-consumer_key= ''
-consumer_secret= ''
-access_token= ''
-access_token_secret= ''
+consumer_key= '******************'
+consumer_secret= '******************'
+access_token='******************'
+access_token_secret= '******************'
 
 # Tweepy Authentication
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
@@ -38,19 +44,21 @@ players_list = my_file.readlines()
 date_since = "2021-11-26"
 numTweets = 100
 
-tweets = []
+tweetData = []
 
 for player in players_list:
      search_words = player + " -filter:retweets"
      
      # API fetch request
-     tweets = tw.Cursor(api.search,
+     tweets = tw.Cursor(api.search_tweets,
               q=search_words,
               lang="en",
               tweet_mode="extended",
               since=date_since).items(numTweets)
      
-     tweets.append([player] + [tweet.full_text.encode('utf-8') for tweet in tweets])
+     tweetData.append([player] + [tweet.full_text for tweet in tweets])
+
+     #print(tweetData)
 
 # Output to text file
 # textfile = open("alltweets_output.txt", "w")
@@ -108,27 +116,21 @@ def removeStopWords(tweet):
             ans = ans + i + " "
     return ans
 
-# def expandContractions(tweet):
-#     contractions = Contractions(api_key="glove-twitter-100")
-#     contractions.expand_texts([])  
-#     expandedTweet = contractions.expand_texts(tweet, precise=False)
-#     print(expandedTweet)
-#     return expandedTweet
-
+names = []
 def preprocess(tweets):
-    #tweet processor cleaner
     ans = []
     ctr = 0
+    name = ""
     for i in tweets:
         if (ctr == 0):
-            ans.append(i)
+            names.append(i)
+            print(i)
             ctr += 1
         else:
             # convert emojis to text/words
             afterEmojis = emojiToText(i)  
-            # expand contractions
-            # afterExpansion = expandContractions(afterEmojis)
             # delete urls and mentions (@)
+            #print(i)
             cleaned = p.clean(afterEmojis)
             # remove digits 
             removedDigits = re.sub(r'[0-9]', '', cleaned)
@@ -147,13 +149,75 @@ def preprocess(tweets):
             #remove trailing/leading spaces
             extraspaces = afterLemmatizer.strip()
             ans.append(extraspaces)
-    return ans
+    return [ans, names]
 
-for playerTweets in tweets:
-   print("___________________")
+processedTweets = []
+names = []
+for playerTweets in tweetData:
+   #print("___________________")
    res = preprocess(playerTweets)
    print(res)
-   for i in res:
-       print(i)
+   names = res[1]
+   for i in res[0]:
+       processedTweets.append([i])
 
-    
+# print(processedTweets)
+
+def sentimentAnalysisWithVader(processedTweets):
+    sentimentScores = {}
+    counter = 0
+    sentAnalyser = SentimentIntensityAnalyzer()
+    print("len of processed tweets: ",len(processedTweets), len(names))
+    pos = neg = neu = 0
+    playerTweetCounter = numTweets
+    ctr = 0
+    eachPlayersTweetScores = {}
+    tempPlayer = []
+    for playerTweets in processedTweets:
+        # print("playertweets: ",playerTweets)
+        sent = sentAnalyser.polarity_scores(playerTweets)
+        print(sent)
+        if (sent['compound'] >= 0.05):
+            pos += 1
+        elif (sent['compound'] <= - 0.05):
+            neg += 1
+        else:
+            neu += 1
+        ctr += 1
+        playerTweetCounter = playerTweetCounter - 1
+        
+        if(playerTweetCounter == 0):
+            #print("PNN", pos, neg, neu)
+            sentimentScores[names[counter]] = [(pos/ctr)*100, (neg/ctr)*100 , (neu/ctr)*100]
+            counter += 1
+            #reset all needed vars
+            pos = neg = neu = 0
+            playerTweetCounter = numTweets
+            ctr = 0
+            
+        
+    return sentimentScores
+
+def graphSentimentScores(sent):
+    print("sent",sent)
+    x = []
+    y = []
+    z = []
+    for i in sent:
+        #print(sent[i])
+        x.append(sent[i][0])
+        y.append(sent[i][1])
+        z.append(sent[i][2])
+
+    fig = plt.figure(figsize = (10, 10))
+    ax = plt.axes(projection ="3d")
+    ax.scatter3D(x, y, z, color = "blue")
+    ax.set_xlabel('Percentage Positive %', fontweight ='bold')
+    ax.set_ylabel('Percentage Negative %', fontweight ='bold')
+    ax.set_zlabel('Percentage Neutral %', fontweight ='bold')
+    plt.title("Sentiment Plot", fontweight ='bold')
+    plt.show()
+
+print(names)
+res = sentimentAnalysisWithVader(processedTweets)
+graphSentimentScores(res)
