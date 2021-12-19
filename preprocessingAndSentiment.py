@@ -27,10 +27,10 @@ stopWordsList.difference_update(removeStopWords)
 # print("stop words: ", stopWordsList)
 
 #API keys
-consumer_key= '*****************************'
-consumer_secret= '*****************************'
-access_token= '*****************************'
-access_token_secret= '*****************************'
+consumer_key= '**************************'
+consumer_secret= '**************************'
+access_token= '**************************'
+access_token_secret= '**************************'
 
 # Tweepy Authentication
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
@@ -138,11 +138,11 @@ def preprocess(tweets):
             # remove digits 
             removedDigits = re.sub(r'[0-9]', '', cleaned)
             # remove punctuation
-            removedPunct = re.sub(r'[^\w\s]', '', removedDigits)
+            #removedPunct = re.sub(r'[^\w\s]', '', removedDigits)
             # make all the text lowercase
             # lowercase = removedPunct.lower()     
             # remove extra spaces 
-            extraspaces = re.sub(r' +', ' ', removedPunct)
+            extraspaces = re.sub(r' +', ' ', removedDigits)
             # apply remove stop words
             afterStopWords = removeStopWords(extraspaces)
             # remove most and least frequent words
